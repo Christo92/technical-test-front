@@ -12,10 +12,12 @@ import GlobalContext from "@state/global-context";
 
 // Typage du produit
 interface Product {
+  id: number;
   title: string;
-  image: string;
-  description: string;
   price: number;
+  description: string;
+  category: string;
+  image: string;
 }
 
 interface ProductCardProps {
@@ -27,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     context.addProductToCart(product);
-    context.pushObject("open_interstitial", true);
+    context.pushObject("open_cartsidebar", true);
   };
 
   return (

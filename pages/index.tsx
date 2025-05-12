@@ -16,7 +16,7 @@ const Home = () => {
         </Typography>
         <Grid container spacing={2} justifyContent="center" sx={{ mt: 2 }}>
           <Grid>
-            <Link href="/boutique" passHref>
+            <Link href="/shop" passHref>
               <Button variant="contained">
                 La Boutique
               </Button>

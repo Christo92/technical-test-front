@@ -8,14 +8,14 @@ import {
 } from "@mui/material";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import Link from "next/link";
-import Interstitial from "@components/Interstitial";
+import CartSidebar from "@components/CartSidebar";
 import GlobalContext from "@state/global-context";
 
 const Header: React.FC = () => {
   const context = useContext(GlobalContext);
 
   const toggleDrawer = () => {
-    context.pushObject("open_interstitial", true);
+    context.pushObject("open_cartsidebar", true);
   };
 
   return (
@@ -39,7 +39,7 @@ const Header: React.FC = () => {
           </Container>
         </AppBar>
       </header>
-      <Interstitial />
+      <CartSidebar />
     </>
   );
 };

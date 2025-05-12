@@ -1,8 +1,14 @@
-'use client';
-
-import React, { useContext, useState } from 'react';
-import { SwipeableDrawer, Typography, Button, Card, IconButton, CardMedia, Grid } from '@mui/material';
-import { useTheme } from '@mui/material/styles';  // Importation du hook useTheme
+import React, { useContext, useState, useCallback, useEffect, useMemo } from 'react';
+import {
+  SwipeableDrawer,
+  Typography,
+  Button,
+  Card,
+  IconButton,
+  CardMedia,
+  Grid
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import GlobalContext from '@state/global-context';
@@ -15,36 +21,37 @@ interface Product {
   image: string;
 }
 
-const Interstitial = () => {
+const CartSidebar = () => {
   const context = useContext(GlobalContext);
-  const cart: Product[] = context.cart || [];
   const [totalPrice, setTotalPrice] = useState<number>(0);
-  const theme = useTheme(); // Accède au thème MUI via useTheme
+  const theme = useTheme();
+
+  const cart: Product[] = useMemo(() => context.cart || [], [context.cart]);
 
   const handleRemoveProduct = (id: string) => {
     context.removeProductToCart(id);
   };
 
-  const getTotalPrice = () => {
+  const getTotalPrice = useCallback(() => {
     const total = cart.reduce((sum, p) => sum + p.price, 0);
     setTotalPrice(total);
-  };
-
-  React.useEffect(() => {
-    getTotalPrice();
   }, [cart]);
+
+  useEffect(() => {
+    getTotalPrice();
+  }, [getTotalPrice]);
 
   return (
     <SwipeableDrawer
       anchor="right"
-      open={context.open_interstitial}
-      onClose={() => context.pushObject('open_interstitial', false)}
-      onOpen={() => context.pushObject('open_interstitial', true)}
+      open={context.open_cartsidebar}
+      onClose={() => context.pushObject('open_cartsidebar', false)}
+      onOpen={() => context.pushObject('open_cartsidebar', true)}
     >
-      <div style={{ width: '350px', padding: theme.spacing(2) }}> {/* Utilisation de theme.spacing avec sx */}
+      <div style={{ width: '350px', padding: theme.spacing(2) }}>
         <Grid container justifyContent="space-between" sx={{ mb: 2 }}>
           <Grid>
-            <IconButton onClick={() => context.pushObject('open_interstitial', false)} size="large">
+            <IconButton onClick={() => context.pushObject('open_cartsidebar', false)} size="large">
               <ArrowBackIcon color="secondary" />
             </IconButton>
           </Grid>
@@ -67,7 +74,12 @@ const Interstitial = () => {
                   component="img"
                   alt={product.title}
                   image={product.image}
-                  sx={{ width: '100px', height: 'auto', maxHeight: '90px', marginRight: theme.spacing(2) }}
+                  sx={{
+                    width: '100px',
+                    height: 'auto',
+                    maxHeight: '90px',
+                    marginRight: theme.spacing(2)
+                  }}
                 />
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <Typography>{product.title}</Typography>
@@ -96,4 +108,4 @@ const Interstitial = () => {
   );
 };
 
-export default Interstitial;
+export default CartSidebar;
