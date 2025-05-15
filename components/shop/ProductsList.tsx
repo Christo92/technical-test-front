@@ -1,31 +1,22 @@
 import ProductCard from "@components/shop/ProductCard";
 import { Typography, Grid } from "@mui/material";
-import { useContext, useState } from "react";
-import GlobalContext from "@state/global-context";
-import productsData from "@components/data/products.json";
+import { useState } from "react";
+import { Product } from "@state/global-context";
+import productsData from "@data/products.json";
+import { useRouter } from "next/router";
 
-// Typage du produit
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-}
-
-interface ProductListProps {
-  selectedCategory: string;
-}
-
-const ProductList: React.FC<ProductListProps> = ({ selectedCategory }) => {
+const ProductList: React.FC = () => {
   const [products] = useState<Product[]>(productsData);
-  const context = useContext(GlobalContext);
+  const router = useRouter();
+  const categoryQuery =
+    (router.query.category as string)?.toLowerCase() ?? "all";
 
   const filteredProducts =
-    selectedCategory === "all"
+    categoryQuery === "all"
       ? products
-      : products.filter((product) => product.category === selectedCategory);
+      : products.filter(
+          (product) => product.category.toLowerCase() === categoryQuery
+        );
 
   return (
     <>
@@ -34,10 +25,8 @@ const ProductList: React.FC<ProductListProps> = ({ selectedCategory }) => {
           marginBottom: 2,
           fontSize: "22px",
         }}
-      >
-        Products in cart: {context.cart.length}
-      </Typography>
-      <Grid container spacing={2}>
+      ></Typography>
+      <Grid container spacing={2} sx={{ justifyContent: "center" }}>
         {filteredProducts.map((product) => (
           <Grid key={product.id}>
             <ProductCard product={product} />

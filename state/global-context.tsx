@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useEffect, useState, ReactNode } from "react";
 
 export interface Product {
   id: number;
@@ -12,12 +12,13 @@ export interface Product {
 interface GlobalState {
   open_cartsidebar: boolean;
   cart: Product[];
-  wishlist: Product[];
+  wishlist: number[];
   pushObject: (key: string, value: any, callback?: () => void) => void;
   addProductToCart: (product: Product, callback?: () => void) => void;
   removeProductToCart: (id: number, callback?: () => void) => void;
-  addProductToWishlist: (product: Product, callback?: () => void) => void;
-  removeProductFromWishlist: (id: number, callback?: () => void) => void;
+  addProductToWishlist: (productId: number, callback?: () => void) => void;
+  removeProductFromWishlist: (productId: number, callback?: () => void) => void;
+  handleAddToCart: (product: Product) => void;
 }
 
 const GlobalContext = createContext<GlobalState>({} as GlobalState);
@@ -29,47 +30,57 @@ interface GlobalProviderProps {
 export const GlobalProvider = ({ children }: GlobalProviderProps) => {
   const [open_cartsidebar, setOpenCartSidebar] = useState(false);
   const [cart, setCart] = useState<Product[]>([]);
-  const [wishlist, setWishlist] = useState<Product[]>([]);
+  const [wishlist, setWishlist] = useState<number[]>([]);
 
   useEffect(() => {
-    const sessionCart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+    const sessionCart = JSON.parse(sessionStorage.getItem("cart") || "[]");
     setCart(sessionCart);
 
-    const sessionWishlist = JSON.parse(sessionStorage.getItem('wishlist') || '[]');
+    const sessionWishlist = JSON.parse(
+      sessionStorage.getItem("wishlist") || "[]"
+    );
     setWishlist(sessionWishlist);
   }, []);
 
   const pushObject = (key: string, value: any, callback?: () => void) => {
-    if (key === 'open_cartsidebar') setOpenCartSidebar(value);
+    if (key === "open_cartsidebar") setOpenCartSidebar(value);
     callback?.();
   };
 
   const addProductToCart = (product: Product, callback?: () => void) => {
     const updatedCart = [...cart, product];
     setCart(updatedCart);
-    sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+    sessionStorage.setItem("cart", JSON.stringify(updatedCart));
     callback?.();
+  };
+
+  const handleAddToCart = (product: Product) => {
+    addProductToCart(product);
+    // pushObject("open_cartsidebar", true);
   };
 
   const removeProductToCart = (id: number, callback?: () => void) => {
-    const updatedCart = cart.filter(p => p.id !== id);
+    const updatedCart = cart.filter((p) => p.id !== id);
     setCart(updatedCart);
-    sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+    sessionStorage.setItem("cart", JSON.stringify(updatedCart));
     callback?.();
   };
 
-  const addProductToWishlist = (product: Product, callback?: () => void) => {
-    if (wishlist.find(p => p.id === product.id)) return;
-    const updatedWishlist = [...wishlist, product];
+  const addProductToWishlist = (productId: number, callback?: () => void) => {
+    if (wishlist.includes(productId)) return;
+    const updatedWishlist = [...wishlist, productId];
     setWishlist(updatedWishlist);
-    sessionStorage.setItem('wishlist', JSON.stringify(updatedWishlist));
+    sessionStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
     callback?.();
   };
 
-  const removeProductFromWishlist = (id: number, callback?: () => void) => {
-    const updatedWishlist = wishlist.filter(p => p.id !== id);
+  const removeProductFromWishlist = (
+    productId: number,
+    callback?: () => void
+  ) => {
+    const updatedWishlist = wishlist.filter((id) => id !== productId);
     setWishlist(updatedWishlist);
-    sessionStorage.setItem('wishlist', JSON.stringify(updatedWishlist));
+    sessionStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
     callback?.();
   };
 
@@ -84,6 +95,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
         removeProductToCart,
         addProductToWishlist,
         removeProductFromWishlist,
+        handleAddToCart,
       }}
     >
       {children}

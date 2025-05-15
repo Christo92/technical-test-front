@@ -4,21 +4,12 @@ import {
   CardActions,
   CardMedia,
   Typography,
-  IconButton,
+  Box,
 } from "@mui/material";
-import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import { useContext } from "react";
-import GlobalContext from "@state/global-context";
-
-// Typage du produit
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-}
+import GlobalContext, { Product } from "@state/global-context";
+import AddToWishlistButton from "@components/shop/AddToWishlistButton";
+import AddToCartButton from "@components/AddToCartButton";
 
 interface ProductCardProps {
   product: Product;
@@ -27,48 +18,66 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const context = useContext(GlobalContext);
 
-  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
-    context.addProductToCart(product);
-    context.pushObject("open_cartsidebar", true);
-  };
-
   return (
     <Card
       sx={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        height: "100%",
+        p: 3,
+        mb: 2,
+        borderRadius: "5px",
+        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+        width: "100%",
+        maxWidth: 600,
+        height: "auto",
+        margin: "auto",
       }}
     >
-      <CardContent sx={{ width: "100%" }}>
-        <div>
-          <CardMedia
-            component="img"
-            alt={product.title}
-            image={product.image}
-            sx={{
-              maxHeight: "170px",
-              width: "auto",
-              margin: "auto",
-            }}
-            title={product.title}
-          />
-        </div>
-        <Typography gutterBottom component="h2" sx={{ fontSize: "1rem" }}>
+      <Box sx={{ position: "relative", width: "100%" }}>
+        <Box sx={{ position: "absolute", top: 8, left: 8 }}>
+          <AddToWishlistButton productId={product.id} />
+        </Box>
+        <CardMedia
+          component="img"
+          alt={product.title}
+          image={product.image}
+          sx={{
+            width: "100%",
+            height: "auto",
+            objectFit: "contain",
+            maxHeight: 200,
+            borderRadius: "8px",
+            mb: 2,
+            mx: "auto",
+            mt: 2,
+            display: "block",
+          }}
+        />
+      </Box>
+      <CardContent sx={{ textAlign: "center" }}>
+        <Typography variant="h6" gutterBottom>
           {product.title}
         </Typography>
-        <Typography variant="body2" color="text.secondary" component="p">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            mb: 1,
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            maxWidth: "100%",
+          }}
+        >
           {product.description}
         </Typography>
-        <Typography variant="body2" color="text.secondary" component="p">
-          {product.price}€
+        <Typography variant="h6" sx={{ color: "#2979ff" }}>
+          ${product.price.toFixed(2)}
         </Typography>
       </CardContent>
-      <CardActions>
-        <IconButton onClick={(e) => handleAddToCart(e, product)} size="large">
-          <ShoppingBasketIcon color="secondary" />
-        </IconButton>
+      <CardActions sx={{ justifyContent: "center" }}>
+        <AddToCartButton product={product} />
       </CardActions>
     </Card>
   );

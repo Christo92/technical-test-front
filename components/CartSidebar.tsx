@@ -1,4 +1,10 @@
-import React, { useContext, useState, useCallback, useEffect, useMemo } from 'react';
+import React, {
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import {
   SwipeableDrawer,
   Typography,
@@ -6,20 +12,13 @@ import {
   Card,
   IconButton,
   CardMedia,
-  Grid
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete';
-import GlobalContext from '@state/global-context';
-
-// Typage minimal du produit (à adapter selon ta structure réelle)
-interface Product {
-  id: string;
-  title: string;
-  price: number;
-  image: string;
-}
+  Grid,
+  Divider,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DeleteIcon from "@mui/icons-material/Delete";
+import GlobalContext, { Product } from "@state/global-context";
 
 const CartSidebar = () => {
   const context = useContext(GlobalContext);
@@ -28,7 +27,7 @@ const CartSidebar = () => {
 
   const cart: Product[] = useMemo(() => context.cart || [], [context.cart]);
 
-  const handleRemoveProduct = (id: string) => {
+  const handleRemoveProduct = (id: number) => {
     context.removeProductToCart(id);
   };
 
@@ -45,63 +44,107 @@ const CartSidebar = () => {
     <SwipeableDrawer
       anchor="right"
       open={context.open_cartsidebar}
-      onClose={() => context.pushObject('open_cartsidebar', false)}
-      onOpen={() => context.pushObject('open_cartsidebar', true)}
+      onClose={() => context.pushObject("open_cartsidebar", false)}
+      onOpen={() => context.pushObject("open_cartsidebar", true)}
+      sx={{ width: "100%", maxWidth: 400 }}
     >
-      <div style={{ width: '350px', padding: theme.spacing(2) }}>
-        <Grid container justifyContent="space-between" sx={{ mb: 2 }}>
-          <Grid>
-            <IconButton onClick={() => context.pushObject('open_cartsidebar', false)} size="large">
-              <ArrowBackIcon color="secondary" />
+      <div
+        style={{
+          padding: theme.spacing(2),
+          backgroundColor: "#f9f9f9",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mb: 2 }}
+          >
+            <IconButton
+              onClick={() => context.pushObject("open_cartsidebar", false)}
+              size="large"
+            >
+              <ArrowBackIcon />
             </IconButton>
+            <Typography variant="h6">Shopping Cart</Typography>
           </Grid>
-          <Grid>
-            <Typography variant="h5">Mon panier</Typography>
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={2}>
-          <Grid>
-            <Typography>
-              {cart.length > 1 ? `${cart.length} produits` : `${cart.length} produit`}
-            </Typography>
-          </Grid>
-
+          <Divider sx={{ mb: 2 }} />
           {cart.map((product, index) => (
-            <Grid key={index}>
-              <Card sx={{ display: 'flex', padding: theme.spacing(2), position: 'relative' }}>
-                <CardMedia
-                  component="img"
-                  alt={product.title}
-                  image={product.image}
-                  sx={{
-                    width: '100px',
-                    height: 'auto',
-                    maxHeight: '90px',
-                    marginRight: theme.spacing(2)
-                  }}
-                />
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <Typography>{product.title}</Typography>
-                  <Typography>{product.price} euros</Typography>
-                  <IconButton
-                    onClick={() => handleRemoveProduct(product.id)}
-                    sx={{ position: 'absolute', right: 0, bottom: 0 }}
-                    size="large"
+            <Card
+              key={index}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                p: 1,
+                mb: 1,
+                backgroundColor: "white",
+                borderRadius: 2,
+                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                position: "relative",
+              }}
+            >
+              <CardMedia
+                component="img"
+                alt={product.title}
+                image={product.image}
+                sx={{ width: 60, height: 60, borderRadius: 1, mr: 2 }}
+              />
+              <Grid
+                container
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Grid sx={{ paddingRight: "40px" }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                      maxWidth: "100%",
+                    }}
                   >
-                    <DeleteIcon color="secondary" />
-                  </IconButton>
-                </div>
-              </Card>
-            </Grid>
+                    {product.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    ${product.price.toFixed(2)}
+                  </Typography>
+                </Grid>
+                <IconButton
+                  onClick={() => handleRemoveProduct(product.id)}
+                  size="small"
+                  sx={{
+                    position: "absolute",
+                    right: 8,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Card>
           ))}
-        </Grid>
-
-        <Typography gutterBottom>
-          Prix total : {totalPrice} {totalPrice > 1 ? 'euros' : 'euro'}
-        </Typography>
-        <Button color="primary" variant="contained">
-          Commander
+          <Divider sx={{ my: 2 }} />
+          <Typography
+            variant="h6"
+            sx={{ color: "#2979ff", textAlign: "right" }}
+          >
+            Total: ${totalPrice.toFixed(2)}
+          </Typography>
+        </div>
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          sx={{ mt: 2, mb: 1 }}
+        >
+          Order
         </Button>
       </div>
     </SwipeableDrawer>
