@@ -1,6 +1,12 @@
-import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
-import { ServerStyleSheets } from '@mui/styles';
-import theme from '@theme/theme';
+import Document, {
+  Html,
+  Head,
+  Main,
+  NextScript,
+  DocumentContext,
+} from "next/document";
+import { ServerStyleSheets } from "@mui/styles";
+import theme from "@theme/theme";
 
 class MyDocument extends Document {
   render() {
@@ -10,7 +16,7 @@ class MyDocument extends Document {
           <meta name="theme-color" content={theme.palette.primary.main} />
           <link
             rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
           />
         </Head>
         <body>
@@ -39,7 +45,10 @@ MyDocument.getInitialProps = async (ctx: DocumentContext) => {
   return {
     ...initialProps,
     // Styles fragment is rendered after the app and page rendering finish.
-    styles: [...(Array.isArray(initialProps.styles) ? initialProps.styles : []), sheets.getStyleElement()],
+    styles: [
+      ...(Array.isArray(initialProps.styles) ? initialProps.styles : []),
+      sheets.getStyleElement(),
+    ],
   };
 };
 

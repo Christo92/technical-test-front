@@ -17,7 +17,9 @@ import { useRouter } from "next/router";
 import GlobalContext from "@state/global-context";
 import productsData from "@data/products.json";
 import supershopLogo from "@assets/supershop-logo.png";
-import CartSidebar from "@components/CartSidebar";
+import CartSidebar from "@components/shop/CartSidebar";
+import MenuSidebar from "@components/menusidebar/MenuSidebar"; // <-- importer
+import BadgeIconButton from "./BadgeIconButton";
 
 const Header: React.FC = () => {
   const context = useContext(GlobalContext);
@@ -25,15 +27,18 @@ const Header: React.FC = () => {
   const isSmallScreen = useMediaQuery((theme: any) =>
     theme.breakpoints.down("md")
   );
-  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const toggleDrawer = () => {
+  // State pour ouvrir sidebar menu burger
+  const [menuSidebarOpen, setMenuSidebarOpen] = useState(false);
+
+  // Toujours gérer ouverture CartSidebar via contexte (desktop uniquement)
+  const toggleCartSidebar = () => {
     context.pushObject("open_cartsidebar", true);
   };
 
   const handleCategoryClick = (category: string) => {
     router.push({ pathname: "/shop", query: { category } });
-    setDrawerOpen(false);
+    setMenuSidebarOpen(false);
   };
 
   const categories = Array.from(
@@ -84,62 +89,26 @@ const Header: React.FC = () => {
 
               {!isSmallScreen ? (
                 <Box sx={{ display: "flex", gap: 2 }}>
-                  <Box sx={{ position: "relative" }}>
-                    <Link href="/wishlist" passHref>
-                      <IconButton size="large">
-                        <FavoriteBorderIcon color="secondary" />
-                      </IconButton>
-                    </Link>
-                    {context.wishlist.length > 0 && (
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          bottom: 4,
-                          right: 4,
-                          backgroundColor: "red",
-                          color: "white",
-                          borderRadius: "50%",
-                          width: 18,
-                          height: 18,
-                          fontSize: 10,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {context.wishlist.length}
-                      </Box>
-                    )}
-                  </Box>
+                  <BadgeIconButton
+                    href="/wishlist"
+                    icon={<FavoriteBorderIcon color="secondary" />}
+                    count={context.wishlist.length}
+                    badgeColor="red"
+                  />
 
-                  <Box sx={{ position: "relative" }}>
-                    <IconButton onClick={toggleDrawer} size="large">
-                      <ShoppingBasketIcon color="secondary" />
-                    </IconButton>
-                    {context.cart.length > 0 && (
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          bottom: 4,
-                          right: 4,
-                          backgroundColor: "black",
-                          color: "white",
-                          borderRadius: "50%",
-                          width: 18,
-                          height: 18,
-                          fontSize: 10,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {context.cart.length}
-                      </Box>
-                    )}
-                  </Box>
+                  <BadgeIconButton
+                    onClick={toggleCartSidebar}
+                    icon={<ShoppingBasketIcon color="secondary" />}
+                    count={context.cart.length}
+                    badgeColor="black"
+                  />
                 </Box>
               ) : (
-                <IconButton onClick={toggleDrawer} size="large">
+                // Menu burger ouvre MenuSidebar au lieu du CartSidebar
+                <IconButton
+                  onClick={() => setMenuSidebarOpen(true)}
+                  size="large"
+                >
                   <MenuIcon />
                 </IconButton>
               )}
@@ -147,7 +116,21 @@ const Header: React.FC = () => {
           </Container>
         </AppBar>
       </header>
+
+      {/* Sidebar du panier (desktop) */}
       <CartSidebar />
+
+      {/* Sidebar du menu burger (mobile) */}
+      <MenuSidebar
+        open={menuSidebarOpen}
+        onClose={() => setMenuSidebarOpen(false)}
+        wishlistCount={context.wishlist.length}
+        cartCount={context.cart.length}
+        onCartClick={() => {
+          setMenuSidebarOpen(false); // Fermer la sidebar menu
+          context.pushObject("open_cartsidebar", true); // Ouvrir le panier
+        }}
+      />
     </>
   );
 };

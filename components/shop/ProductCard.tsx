@@ -9,7 +9,7 @@ import {
 import { useContext } from "react";
 import GlobalContext, { Product } from "@state/global-context";
 import AddToWishlistButton from "@components/shop/AddToWishlistButton";
-import AddToCartButton from "@components/AddToCartButton";
+import AddToCartButton from "@components/shop/AddToCartButton";
 
 interface ProductCardProps {
   product: Product;

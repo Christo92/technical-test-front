@@ -13,7 +13,7 @@ const AddToCartButton: React.FC<{ product: Product }> = ({ product }) => {
       startIcon={<ShoppingBasketIcon />}
       onClick={() => handleAddToCart(product)}
     >
-      Add to Cart
+      Ajouter au panier
     </Button>
   );
 };

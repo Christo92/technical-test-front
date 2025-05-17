@@ -46,7 +46,14 @@ const CartSidebar = () => {
       open={context.open_cartsidebar}
       onClose={() => context.pushObject("open_cartsidebar", false)}
       onOpen={() => context.pushObject("open_cartsidebar", true)}
-      sx={{ width: "100%", maxWidth: 400 }}
+      PaperProps={{
+        sx: {
+          width: {
+            xs: "100vw", // 100% en mobile
+            sm: 400, // 400px dès sm+
+          },
+        },
+      }}
     >
       <div
         style={{

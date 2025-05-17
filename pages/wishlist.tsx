@@ -18,7 +18,7 @@ import GlobalContext from "@state/global-context";
 import productsData from "@data/products.json";
 import AddToWishlistButton from "@components/shop/AddToWishlistButton";
 import { useTheme } from "@mui/material/styles";
-import AddToCartButton from "@components/AddToCartButton";
+import AddToCartButton from "@components/shop/AddToCartButton";
 
 const WishlistPage = () => {
   const { wishlist } = useContext(GlobalContext);
@@ -32,13 +32,19 @@ const WishlistPage = () => {
     <DefaultLayout>
       <Container maxWidth="lg" sx={{ py: 5 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          My Wishlist
+          Ma Wishlist
         </Typography>
         {productsInWishlist.length === 0 ? (
-          <Typography variant="body1">Your wishlist is empty.</Typography>
+          <Typography variant="body1">Votre wishlist est vide.</Typography>
         ) : (
           <TableContainer>
-            <Table sx={{ minWidth: 650 }} aria-label="wishlist table">
+            <Table
+              sx={{
+                width: "100%",
+                tableLayout: "auto",
+              }}
+              aria-label="wishlist table"
+            >
               <TableHead>
                 <TableRow>
                   <TableCell></TableCell>
@@ -76,7 +82,7 @@ const WishlistPage = () => {
                       <TableCell>${product.price.toFixed(2)}</TableCell>
                     )}
                     <TableCell align="right">
-                    <AddToCartButton product={product} />
+                      <AddToCartButton product={product} />
                     </TableCell>
                   </TableRow>
                 ))}
