@@ -84,17 +84,18 @@ const Home = () => {
           }}
         >
           <Typography variant="h2" component="h1" gutterBottom>
-            Welcome to <strong>SuperShop</strong>
+            Bienvenue sur <strong>SuperShop</strong>
           </Typography>
           <Typography variant="h6">
-            Trendy clothes, stylish accessories, and the latest electronics.
+            Des vêtements tendance, des accessoires stylés et les dernières
+            nouveautés électroniques.
             <br />
-            Everything you need, all in one place.
+            Tout ce dont vous avez besoin, en un seul endroit.
           </Typography>
           <Box sx={{ mt: 4 }}>
             <Link href="/shop" passHref>
               <Button variant="contained" size="large" color="secondary">
-                Explore the Shop
+                Explorez la boutique
               </Button>
             </Link>
           </Box>

@@ -43,7 +43,7 @@ interface GlobalState {
 }
 
 // Create the React context with a placeholder default value
-const GlobalContext = createContext<GlobalState>({} as GlobalState);
+const GlobalContext = createContext<GlobalState | undefined>(undefined);
 
 interface GlobalProviderProps {
   children: ReactNode;

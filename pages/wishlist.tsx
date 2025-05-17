@@ -8,7 +8,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Grid,
   Box,
   useMediaQuery,
   CircularProgress,
@@ -20,20 +19,41 @@ import AddToWishlistButton from "@components/shop/AddToWishlistButton";
 import { useTheme } from "@mui/material/styles";
 import AddToCartButton from "@components/shop/AddToCartButton";
 
+/**
+ * WishlistPage component
+ *
+ * Displays the user's wishlist page containing the list of products
+ * added to the wishlist. This page uses the global context to retrieve
+ * the IDs of the products in the wishlist and only displays those products.
+ *
+ * Features:
+ * - Uses global context to get wishlist IDs and loading state
+ * - Filters products to display based on JSON product data
+ * - Responsive behavior: hides price column on mobile screens
+ * - Shows a loading spinner while wishlist data is being fetched
+ *
+ * Built with MUI components for layout, table, and UI elements,
+ * and wrapped inside a DefaultLayout component for consistent page structure.
+ */
 const WishlistPage = () => {
-  // Get global context for wishlist and loading state
-  const { wishlist, isLoadingWishlist } = useContext(GlobalContext);
+  // Retrieve global context values: wishlist and loading status
+  const context = useContext(GlobalContext);
+  if (!context)
+    throw new Error("WishlistPage must be used within a GlobalProvider");
+  const { wishlist, isLoadingWishlist } = context;
 
-  // Filter products that are in the wishlist (array of IDs)
-  const productsInWishlist = productsData.filter((product) =>
-    wishlist.includes(product.id)
-  );
+  // Filter products whose IDs are included in the wishlist array
+  const productsInWishlist = Array.isArray(wishlist)
+    ? productsData.filter((p) => wishlist.includes(p.id))
+    : [];
 
+  // Access the MUI theme for responsive design
   const theme = useTheme();
-  // Detect if screen size is mobile to adjust display
+
+  // Detect if current screen size is small (mobile) to conditionally hide some columns
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Show loader while wishlist data is loading
+  // Show a circular progress indicator while loading wishlist data
   if (isLoadingWishlist) {
     return (
       <Box
@@ -53,65 +73,47 @@ const WishlistPage = () => {
   return (
     <DefaultLayout>
       <Container maxWidth="lg" sx={{ py: 5 }}>
-        {/* Page title */}
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          My Wishlist
+          Ma Wishlist
         </Typography>
 
-        {/* Message if wishlist is empty */}
         {productsInWishlist.length === 0 ? (
-          <Typography variant="body1">Your wishlist is empty.</Typography>
+          <Typography variant="body1">Votre wishlist est vide.</Typography>
         ) : (
           <TableContainer>
             <Table
-              sx={{
-                width: "100%",
-                tableLayout: "auto", // Let column widths adapt to content
-              }}
+              sx={{ width: "100%", tableLayout: "auto" }}
               aria-label="wishlist table"
             >
               <TableHead>
                 <TableRow>
-                  <TableCell></TableCell> {/* Wishlist icon column */}
-                  <TableCell>Product Name</TableCell>
-                  {/* Hide price on mobile */}
-                  {!isMobile && <TableCell>Unit Price</TableCell>}
-                  <TableCell align="right">Action</TableCell> {/* Add to cart button */}
+                  <TableCell></TableCell>
+                  <TableCell>Nom du produit</TableCell>
+                  {!isMobile && <TableCell>Prix</TableCell>}
+                  <TableCell align="right"></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {productsInWishlist.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell>
-                      {/* Button to add or remove from wishlist */}
                       <AddToWishlistButton productId={product.id} />
                     </TableCell>
                     <TableCell>
-                      <Grid container alignItems="center" spacing={2}>
-                        <Grid>
-                          {/* Product image */}
-                          <Box
-                            component="img"
-                            src={product.image}
-                            alt={product.title}
-                            sx={{ width: 50, height: 50, borderRadius: 1 }}
-                          />
-                        </Grid>
-                        <Grid
-                          sx={{
-                            fontSize: "12px",
-                          }}
-                        >
-                          {product.title}
-                        </Grid>
-                      </Grid>
+                      <Box display="flex" alignItems="center" gap={2}>
+                        <Box
+                          component="img"
+                          src={product.image}
+                          alt={product.title}
+                          sx={{ width: 50, height: 50, borderRadius: 1 }}
+                        />
+                        <Typography variant="body2">{product.title}</Typography>
+                      </Box>
                     </TableCell>
-                    {/* Price visible only on non-mobile */}
                     {!isMobile && (
                       <TableCell>${product.price.toFixed(2)}</TableCell>
                     )}
                     <TableCell align="right">
-                      {/* Add to cart button */}
                       <AddToCartButton product={product} />
                     </TableCell>
                   </TableRow>

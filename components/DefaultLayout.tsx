@@ -23,11 +23,9 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
-
       <Box component="main" sx={{ flexGrow: 1 }}>
         {children}
       </Box>
-
       <Footer />
     </Box>
   );
