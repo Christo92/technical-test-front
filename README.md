@@ -1,56 +1,56 @@
-## Getting Started
+# 🛒 SuperShop App
 
-Repo link : https://github.com/BirchboxFR/technical-test-front
+SuperShop is a modern e-commerce web application built with **Next.js 15**, **Material UI v7**, and **Emotion** for styling.
+It features a responsive layout, dark/light theme support, product listing, wishlist management, and smooth user interactions.
+---
 
-install the project:
-```bash
-cd technical-test-front/
+## ✨ Features
 
+- ⚡ Responsive UI using Material UI and CSS-in-JS (Emotion)
+- ⚡ Product listing and detailed product cards
+- ⚡ Wishlist functionality with add/remove buttons
+- ⚡ Smooth scrolling and animations
+- ⚡ SEO friendly with custom document and head tags
+- ⚡ Google Fonts integration (Poppins)
+- ⚡ Server-Side Rendering (SSR) with Emotion for optimized styles
+
+---
+
+## Tech Stack
+
+- **Next.js 15** — React framework with SSR and static site generation
+- **Material UI v7** — Component library for React with theming support
+- **Emotion** — CSS-in-JS library used with MUI for styling
+- **TypeScript** — Strongly typed JavaScript
+- **React Context API** — State management for global state (wishlist, loading states)
+- **ESLint & Prettier** — Code quality and formatting
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js >= 18.x
+- npm or yarn
+
+### 1. Clone the repository
+
+```
+git clone git@github.com:Christo92/technical-test-front.git
+cd technical-test-front
+git fetch --all
+git checkout improve
+```
+
+### 2. Install dependencies
+
+```
 npm install
-# or
-yarn install
 ```
 
-First, run the development server:
+### 4. Start the development server
 
-```bash
+```
 npm run dev
-# or
-yarn dev
 ```
-
-Pay attention to your node (v14) and Npm (v6) version
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-## Technical Test
-### First part
-#### Wishlist implementation :
-- user can add a product to his wishlist
-- user can remove a product from his wishlist
-- user can navigate to a dedicated page with all products saved in the wishlist
-
-#### This is a frontend lead job offer, pay attention about UI, UX of course but also web performance issues and potential bottlenecks.
-
-### Second part
-You have to reproduce this component : 
-![Blissim card component](/public/static/images/card-component.png "Blisism card component")
-You can choose similar fonts and the image is available in the public folder.
-You can positioned the component on the homepage instead of the "lorem" text.
-#### Keep in mind that most of the content on our site is customizable by teams and comes from a back office.
-
-Here is the figma file: https://www.figma.com/file/vxaazm4D0eucRuMhBkWL6r/Composant-Card
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Do not forget
-The purpose of this test is to evaluate your skills, so feel free to refactor and adapt the project to show us *your* skills and apply best practices (SOLID, web performance etc.).
-
