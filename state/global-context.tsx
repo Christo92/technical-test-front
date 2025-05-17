@@ -13,6 +13,7 @@ interface GlobalState {
   open_cartsidebar: boolean;
   cart: Product[];
   wishlist: number[];
+  isLoadingWishlist: boolean;
   pushObject: (key: string, value: any, callback?: () => void) => void;
   addProductToCart: (product: Product, callback?: () => void) => void;
   removeProductToCart: (id: number, callback?: () => void) => void;
@@ -34,6 +35,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
   const [open_cartsidebar, setOpenCartSidebar] = useState(false);
   const [cart, setCart] = useState<Product[]>([]);
   const [wishlist, setWishlist] = useState<number[]>([]);
+  const [isLoadingWishlist, setIsLoadingWishlist] = useState(true);
 
   useEffect(() => {
     const sessionCart = JSON.parse(sessionStorage.getItem("cart") || "[]");
@@ -43,6 +45,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
       sessionStorage.getItem("wishlist") || "[]"
     );
     setWishlist(sessionWishlist);
+    setIsLoadingWishlist(false);
   }, []);
 
   const pushObject = (key: string, value: any, callback?: () => void) => {
@@ -110,6 +113,7 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
         open_cartsidebar,
         cart,
         wishlist,
+        isLoadingWishlist,
         pushObject,
         addProductToCart,
         removeProductToCart,

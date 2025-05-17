@@ -6,7 +6,6 @@ import {
   Container,
   Box,
   Typography,
-  useMediaQuery,
 } from "@mui/material";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -18,20 +17,15 @@ import GlobalContext from "@state/global-context";
 import productsData from "@data/products.json";
 import supershopLogo from "@assets/supershop-logo.png";
 import CartSidebar from "@components/shop/CartSidebar";
-import MenuSidebar from "@components/menusidebar/MenuSidebar"; // <-- importer
+import MenuSidebar from "@components/menusidebar/MenuSidebar";
 import BadgeIconButton from "./BadgeIconButton";
 
 const Header: React.FC = () => {
   const context = useContext(GlobalContext);
   const router = useRouter();
-  const isSmallScreen = useMediaQuery((theme: any) =>
-    theme.breakpoints.down("md")
-  );
 
-  // State pour ouvrir sidebar menu burger
   const [menuSidebarOpen, setMenuSidebarOpen] = useState(false);
 
-  // Toujours gérer ouverture CartSidebar via contexte (desktop uniquement)
   const toggleCartSidebar = () => {
     context.pushObject("open_cartsidebar", true);
   };
@@ -68,55 +62,66 @@ const Header: React.FC = () => {
                 />
               </Link>
 
-              {!isSmallScreen && (
-                <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
-                  {categories.map((category, i) => {
-                    const isSelected = category === selectedCategory;
-                    return (
-                      <Typography
-                        key={i}
-                        variant="body2"
-                        onClick={() => handleCategoryClick(category)}
-                        sx={{
-                          cursor: "pointer",
-                          fontWeight: isSelected ? "bold" : 400,
-                          color: isSelected ? "text.primary" : "text.secondary",
-                          textTransform: "uppercase",
-                          "&:hover": { textDecoration: "underline" },
-                        }}
-                      >
-                        {category}
-                      </Typography>
-                    );
-                  })}
-                </Box>
-              )}
+              {/* Menu desktop */}
+              <Box
+                sx={{
+                  display: { xs: "none", md: "flex" },
+                  gap: 3,
+                  alignItems: "center",
+                }}
+              >
+                {categories.map((category, i) => {
+                  const isSelected = category === selectedCategory;
+                  return (
+                    <Typography
+                      key={i}
+                      variant="body2"
+                      onClick={() => handleCategoryClick(category)}
+                      sx={{
+                        cursor: "pointer",
+                        fontWeight: isSelected ? "bold" : 400,
+                        color: isSelected ? "text.primary" : "text.secondary",
+                        textTransform: "uppercase",
+                        "&:hover": { textDecoration: "underline" },
+                      }}
+                    >
+                      {category}
+                    </Typography>
+                  );
+                })}
+              </Box>
 
-              {!isSmallScreen ? (
-                <Box sx={{ display: "flex", gap: 2 }}>
-                  <BadgeIconButton
-                    href="/wishlist"
-                    icon={<FavoriteBorderIcon color="secondary" />}
-                    count={context.wishlist.length}
-                    badgeColor="red"
-                  />
+              {/* Icons desktop */}
+              <Box
+                sx={{
+                  display: { xs: "none", md: "flex" },
+                  gap: 2,
+                }}
+              >
+                <BadgeIconButton
+                  href="/wishlist"
+                  icon={<FavoriteBorderIcon color="secondary" />}
+                  count={context.wishlist.length}
+                  badgeColor="red"
+                />
+                <BadgeIconButton
+                  onClick={toggleCartSidebar}
+                  icon={<ShoppingBasketIcon color="secondary" />}
+                  count={context.cart.length}
+                  badgeColor="black"
+                />
+              </Box>
 
-                  <BadgeIconButton
-                    onClick={toggleCartSidebar}
-                    icon={<ShoppingBasketIcon color="secondary" />}
-                    count={context.cart.length}
-                    badgeColor="black"
-                  />
-                </Box>
-              ) : (
-                // Menu burger ouvre MenuSidebar au lieu du CartSidebar
-                <IconButton
-                  onClick={() => setMenuSidebarOpen(true)}
-                  size="large"
-                >
-                  <MenuIcon />
-                </IconButton>
-              )}
+              {/* Menu burger mobile */}
+              <IconButton
+                onClick={() => setMenuSidebarOpen(true)}
+                size="large"
+                sx={{
+                  display: { xs: "inline-flex", md: "none" },
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
             </Toolbar>
           </Container>
         </AppBar>
@@ -132,8 +137,8 @@ const Header: React.FC = () => {
         wishlistCount={context.wishlist.length}
         cartCount={context.cart.length}
         onCartClick={() => {
-          setMenuSidebarOpen(false); // Fermer la sidebar menu
-          context.pushObject("open_cartsidebar", true); // Ouvrir le panier
+          setMenuSidebarOpen(false);
+          context.pushObject("open_cartsidebar", true);
         }}
       />
     </>

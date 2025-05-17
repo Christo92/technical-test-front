@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, useTheme, useMediaQuery } from "@mui/material";
+import React, { useState } from "react";
+import { Box, useTheme, useMediaQuery, Fade } from "@mui/material";
 import Image from "next/image";
 import welcomeBackground from "@assets/welcome-background.jpg";
 import welcomeIcon from "@assets/welcome-icon.svg";
@@ -8,6 +8,7 @@ import WelcomeSection from "@components/welcomeCard/WelcomeSection";
 const WelcomeCard = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <Box
@@ -20,20 +21,34 @@ const WelcomeCard = () => {
         gap: isMobile ? 4 : 6,
       }}
     >
+      {/* Image avec fade-in */}
       <Box
         sx={{
           flexShrink: 0,
           width: isMobile ? "100%" : 600,
           display: "flex",
           justifyContent: "center",
+          position: "relative",
         }}
       >
-        <Image
-          src={welcomeBackground}
-          alt="SuperShop"
-          style={{ width: "100%", height: "auto", borderRadius: 8 }}
-          priority
-        />
+        <Fade in={loaded} timeout={600}>
+          <Box sx={{ width: "100%", borderRadius: 2, overflow: "hidden" }}>
+            <Image
+              src={welcomeBackground}
+              alt="SuperShop"
+              onLoad={() => setLoaded(true)}
+              style={{
+                width: "100%",
+                height: "auto",
+                borderRadius: 8,
+                opacity: loaded ? 1 : 0,
+                transition: "opacity 0.4s ease-in-out",
+                display: "block",
+              }}
+              priority
+            />
+          </Box>
+        </Fade>
       </Box>
 
       <Box

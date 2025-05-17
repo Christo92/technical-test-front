@@ -12,6 +12,7 @@ import {
   Grid,
   Box,
   useMediaQuery,
+  CircularProgress,
 } from "@mui/material";
 import { useContext } from "react";
 import GlobalContext from "@state/global-context";
@@ -21,12 +22,29 @@ import { useTheme } from "@mui/material/styles";
 import AddToCartButton from "@components/shop/AddToCartButton";
 
 const WishlistPage = () => {
-  const { wishlist } = useContext(GlobalContext);
+  const { wishlist, isLoadingWishlist } = useContext(GlobalContext);
+
   const productsInWishlist = productsData.filter((product) =>
     wishlist.includes(product.id)
   );
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  if (isLoadingWishlist) {
+    return (
+      <Box
+        sx={{
+          width: "100vw",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "40px",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <DefaultLayout>

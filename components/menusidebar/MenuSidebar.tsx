@@ -1,5 +1,6 @@
 import React from "react";
 import { Drawer, Box, Divider, Typography } from "@mui/material";
+import Link from "next/link";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import BadgeIconButton from "@components/header/BadgeIconButton"; // adapte le chemin si besoin
@@ -42,7 +43,9 @@ const MenuSidebar: React.FC<MenuSidebarProps> = ({
             count={wishlistCount}
             badgeColor="red"
           />
-          <Typography component="span">Wishlist</Typography>
+          <Link href="/wishlist" passHref>
+            <Typography component="span">Wishlist</Typography>
+          </Link>
         </Box>
 
         <Divider sx={{ my: 2 }} />

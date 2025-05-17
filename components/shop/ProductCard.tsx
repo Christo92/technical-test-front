@@ -2,11 +2,12 @@ import {
   Card,
   CardContent,
   CardActions,
-  CardMedia,
   Typography,
   Box,
+  Skeleton,
+  Fade,
 } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import GlobalContext, { Product } from "@state/global-context";
 import AddToWishlistButton from "@components/shop/AddToWishlistButton";
 import AddToCartButton from "@components/shop/AddToCartButton";
@@ -17,6 +18,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const context = useContext(GlobalContext);
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <Card
@@ -34,27 +36,52 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         margin: "auto",
       }}
     >
-      <Box sx={{ position: "relative", width: "100%" }}>
-        <Box sx={{ position: "absolute", top: 8, left: 8 }}>
+      <Box sx={{ position: "relative", width: "100%", height: 200 }}>
+        <Box sx={{ position: "absolute", top: 8, left: 8, zIndex: 2 }}>
           <AddToWishlistButton productId={product.id} />
         </Box>
-        <CardMedia
-          component="img"
-          alt={product.title}
-          image={product.image}
-          sx={{
-            width: "100%",
-            height: "auto",
-            objectFit: "contain",
-            maxHeight: 200,
-            borderRadius: "8px",
-            mb: 2,
-            mx: "auto",
-            mt: 2,
-            display: "block",
-          }}
-        />
+
+        {/* Squelette avec fade-out */}
+        {!loaded && (
+          <Fade in={!loaded} timeout={300}>
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height="100%"
+              sx={{
+                borderRadius: "8px",
+                position: "absolute",
+                top: 0,
+                left: 0,
+              }}
+            />
+          </Fade>
+        )}
+
+        {/* Image avec fade-in */}
+        <Fade in={loaded} timeout={500}>
+          <Box
+            component="img"
+            src={product.image}
+            alt={product.title}
+            onLoad={() => setLoaded(true)}
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              borderRadius: "8px",
+              position: "relative",
+              zIndex: 1,
+              display: "block",
+              transition: "opacity 0.3s ease-in",
+              opacity: loaded ? 1 : 0,
+              mt: 2,
+              mb: 2,
+            }}
+          />
+        </Fade>
       </Box>
+
       <CardContent sx={{ textAlign: "center" }}>
         <Typography variant="h6" gutterBottom>
           {product.title}
