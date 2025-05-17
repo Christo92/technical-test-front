@@ -7,17 +7,32 @@ import {
   Skeleton,
   Fade,
 } from "@mui/material";
-import { useContext, useState } from "react";
-import GlobalContext, { Product } from "@state/global-context";
+import { useState } from "react";
+import { Product } from "@state/global-context";
 import AddToWishlistButton from "@components/shop/AddToWishlistButton";
 import AddToCartButton from "@components/shop/AddToCartButton";
 
 interface ProductCardProps {
+  /** The product object to display */
   product: Product;
 }
 
+/**
+ * ProductCard component
+ *
+ * Displays a product with its image, title, description, price,
+ * and action buttons for adding to wishlist and to the shopping cart.
+ *
+ * Features:
+ * - Shows a loading skeleton with fade while the product image loads.
+ * - Fade-in effect on the product image once loaded.
+ * - AddToWishlistButton positioned on top-left of the image.
+ * - AddToCartButton below product details.
+ *
+ * Props:
+ * - product: The Product object to be rendered.
+ */
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const context = useContext(GlobalContext);
   const [loaded, setLoaded] = useState(false);
 
   return (
@@ -41,7 +56,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <AddToWishlistButton productId={product.id} />
         </Box>
 
-        {/* Squelette avec fade-out */}
+        {/* Loading skeleton with fade-out */}
         {!loaded && (
           <Fade in={!loaded} timeout={300}>
             <Skeleton
@@ -58,7 +73,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </Fade>
         )}
 
-        {/* Image avec fade-in */}
+        {/* Image with fade-in */}
         <Fade in={loaded} timeout={500}>
           <Box
             component="img"

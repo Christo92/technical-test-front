@@ -1,13 +1,24 @@
+import { useEffect, useState } from "react";
 import DefaultLayout from "@components/DefaultLayout";
 import { Container, Typography, Button, Box, IconButton } from "@mui/material";
 import Link from "next/link";
 import Image from "next/image";
-import homepageBackground from "../assets/homepage-background.jpg";
+import homepageBackground from "@assets/homepage-background.jpg";
 import WelcomeCard from "@components/welcomeCard/WelcomeCard";
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 const Home = () => {
-  // Scroll jusqu'en bas de la page
+  // State to detect when component is mounted (avoid SSR/CSR mismatch)
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Return nothing until component is mounted
+  if (!isMounted) return null;
+
+  // Smooth scroll function to bottom of the page
   const scrollToBottom = () => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
@@ -22,30 +33,49 @@ const Home = () => {
           position: "relative",
           display: "flex",
           alignItems: "center",
-          color: "common.white",
+          justifyContent: "space-between",
+          flexDirection: "column",
           textAlign: "center",
           overflow: "hidden",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "200px 25px",
+          color: "common.white",
+          padding: {
+            xs: "80px 15px",
+            sm: "120px 20px",
+            md: "200px 25px",
+          },
+          minHeight: "100vh", // Prevent layout shifts
         }}
       >
-        <Image
-          src={homepageBackground}
-          alt="SuperShop background"
-          fill
-          style={{ objectFit: "cover" }}
-          quality={90}
-          priority
-        />
+        {/* Full-page background image */}
         <Box
           sx={{
             position: "absolute",
-            inset: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 1,
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 0,
           }}
-        />
+        >
+          <Image
+            src={homepageBackground}
+            alt="SuperShop background"
+            fill
+            style={{ objectFit: "cover" }}
+            quality={90}
+            priority
+          />
+          {/* Dark overlay for text contrast */}
+          <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          />
+        </Box>
+
+        {/* Main content above the image */}
         <Container
           maxWidth="md"
           sx={{
@@ -54,40 +84,41 @@ const Home = () => {
           }}
         >
           <Typography variant="h2" component="h1" gutterBottom>
-            Bienvenue chez <strong>SuperShop</strong>
+            Welcome to <strong>SuperShop</strong>
           </Typography>
           <Typography variant="h6">
-            Des vêtements tendances, des accessoires stylés et les derniers
-            produits électroniques.
+            Trendy clothes, stylish accessories, and the latest electronics.
             <br />
-            Tout ce qu’il vous faut, en un seul endroit.
+            Everything you need, all in one place.
           </Typography>
           <Box sx={{ mt: 4 }}>
             <Link href="/shop" passHref>
               <Button variant="contained" size="large" color="secondary">
-                Explorer la Boutique
+                Explore the Shop
               </Button>
             </Link>
           </Box>
-
-
         </Container>
+
+        {/* Floating button to scroll down */}
         <IconButton
-            onClick={scrollToBottom}
-            aria-label="Scroll to bottom"
-            sx={{
-              position: "absolute",
-              zIndex: 2,
-              mt: 4,
-              color: "common.white",
-              animation: "bounce 2s infinite",
-              fontSize: 40,
-              bottom: "10%",
-            }}
-          >
-            <KeyboardArrowDownIcon fontSize="inherit" />
-          </IconButton>
+          onClick={scrollToBottom}
+          aria-label="Scroll to bottom"
+          sx={{
+            position: "absolute",
+            zIndex: 2,
+            mt: 4,
+            color: "common.white",
+            animation: "bounce 2s infinite",
+            fontSize: 40,
+            bottom: "10%",
+          }}
+        >
+          <KeyboardArrowDownIcon fontSize="inherit" />
+        </IconButton>
       </Box>
+
+      {/* Additional component at the bottom of the page */}
       <WelcomeCard />
     </DefaultLayout>
   );

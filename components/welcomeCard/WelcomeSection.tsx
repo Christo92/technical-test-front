@@ -1,4 +1,4 @@
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 
 interface WelcomeSectionProps {
@@ -8,6 +8,21 @@ interface WelcomeSectionProps {
   description: string;
 }
 
+/**
+ * WelcomeSection component
+ *
+ * Displays a section with an icon, a title, and a description.
+ *
+ * Props:
+ * - imageSrc: URL or import of the icon/image to display (string)
+ * - imageAlt: alt text for the image (string)
+ * - title: section title (string)
+ * - description: section descriptive text (string)
+ *
+ * Layout:
+ * - Horizontal flexbox with icon on the left and text on the right
+ * - White background with padding and rounded corners
+ */
 export default function WelcomeSection({
   imageSrc,
   imageAlt,

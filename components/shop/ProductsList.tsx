@@ -5,6 +5,18 @@ import { Product } from "@state/global-context";
 import productsData from "@data/products.json";
 import { useRouter } from "next/router";
 
+/**
+ * ProductList component
+ *
+ * Displays a list of products filtered by category based on the URL query parameter.
+ * Shows a loading spinner while filtering or waiting for router readiness.
+ *
+ * Features:
+ * - Uses Next.js router to read the "category" query param.
+ * - Filters products based on category, or shows all if category is "all" or missing.
+ * - Displays a loading spinner until filtering is done and router is ready.
+ * - Displays a grid of ProductCard components for the filtered products.
+ */
 const ProductList: React.FC = () => {
   const [products] = useState<Product[]>(productsData);
   const [loading, setLoading] = useState(true);
@@ -19,7 +31,7 @@ const ProductList: React.FC = () => {
 
     setLoading(true);
 
-    // Filtrage direct sans timeout
+    // Filter products immediately based on category query
     const newFiltered =
       categoryQuery === "all"
         ? products

@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { useContext, useState, useCallback, useEffect } from "react";
 import {
   SwipeableDrawer,
   Typography,
@@ -14,62 +8,68 @@ import {
   CardMedia,
   Grid,
   Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import GlobalContext, { Product } from "@state/global-context";
+import GlobalContext from "@state/global-context";
 import ConfirmDeleteDialog from "@components/shop/ConfirmDeleteDialog";
 
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
+/**
+ * CartSidebar component
+ *
+ * Displays a sidebar drawer containing the shopping cart details.
+ *
+ * Features:
+ * - Shows a list of products currently in the cart with their quantity and price.
+ * - Allows incrementing and decrementing product quantity.
+ * - Allows removing individual products from the cart.
+ * - Displays total price of the cart dynamically.
+ * - Includes a confirmation dialog to clear the entire cart.
+ * - Responsive drawer with swipeable open/close behavior.
+ *
+ * Uses global context for cart state management.
+ */
 const CartSidebar = () => {
   const context = useContext(GlobalContext);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const theme = useTheme();
 
-  const groupedCart: CartItem[] = useMemo(() => {
-    const map = new Map<number, CartItem>();
-    const order: number[] = [];
+  // Access the cart array from global context (array of CartItem)
+  const cart = context.cart;
 
-    context.cart.forEach((product) => {
-      if (map.has(product.id)) {
-        map.get(product.id)!.quantity += 1;
-      } else {
-        map.set(product.id, { product, quantity: 1 });
-        order.push(product.id);
-      }
-    });
-
-    return order.map((id) => map.get(id)!);
-  }, [context.cart]);
-
+  /**
+   * Calculates total price of all products in the cart.
+   * Uses useCallback to memoize the function and avoid unnecessary recalculations.
+   */
   const getTotalPrice = useCallback(() => {
-    const total = groupedCart.reduce(
+    const total = cart.reduce(
       (sum, item) => sum + item.product.price * item.quantity,
       0
     );
     setTotalPrice(total);
-  }, [groupedCart]);
+  }, [cart]);
 
+  // Recalculate total price whenever cart changes
   useEffect(() => {
     getTotalPrice();
   }, [getTotalPrice]);
 
+  /**
+   * Remove a product from the cart by its ID.
+   * @param id - Product ID to remove.
+   */
   const handleRemoveProduct = (id: number) => {
     context.removeProductToCart(id);
   };
 
+  /**
+   * Confirm and clear the entire cart.
+   * Closes the confirmation dialog after clearing.
+   */
   const handleConfirmDeleteAll = () => {
     context.clearCart();
     setConfirmDeleteOpen(false);
@@ -93,6 +93,7 @@ const CartSidebar = () => {
           },
         }}
       >
+        {/* Cart content container */}
         <div
           style={{
             padding: theme.spacing(2),
@@ -101,6 +102,7 @@ const CartSidebar = () => {
             overflowY: "auto",
           }}
         >
+          {/* Header: back button, title, and clear cart button */}
           <Grid
             container
             alignItems="center"
@@ -114,7 +116,7 @@ const CartSidebar = () => {
               <ArrowBackIcon />
             </IconButton>
             <Typography variant="h6">Panier</Typography>
-            {groupedCart.length > 0 && (
+            {cart.length > 0 && (
               <Button
                 onClick={() => setConfirmDeleteOpen(true)}
                 color="error"
@@ -126,7 +128,8 @@ const CartSidebar = () => {
           </Grid>
           <Divider sx={{ mb: 2 }} />
 
-          {groupedCart.map(({ product, quantity }) => (
+          {/* List of cart items */}
+          {cart.map(({ product, quantity }) => (
             <Card
               key={product.id}
               sx={{
@@ -150,7 +153,7 @@ const CartSidebar = () => {
                   height: 60,
                   borderRadius: 1,
                   mr: 2,
-                  alignSelf: "center", // centré verticalement
+                  alignSelf: "center",
                 }}
               />
               <Grid container>
@@ -188,7 +191,7 @@ const CartSidebar = () => {
                     <Grid>
                       <IconButton
                         onClick={() =>
-                          context.incrementProductQuantity(product)
+                          context.incrementProductQuantity(product.id)
                         }
                         size="small"
                       >
@@ -198,6 +201,8 @@ const CartSidebar = () => {
                   </Grid>
                 </Grid>
               </Grid>
+
+              {/* Remove product button */}
               <IconButton
                 onClick={() => handleRemoveProduct(product.id)}
                 size="small"
@@ -214,6 +219,8 @@ const CartSidebar = () => {
           ))}
 
           <Divider sx={{ my: 2 }} />
+
+          {/* Total price display */}
           <Typography
             variant="h6"
             sx={{ color: "#2979ff", textAlign: "right" }}
@@ -222,7 +229,7 @@ const CartSidebar = () => {
           </Typography>
         </div>
 
-        {/* Sticky Order Button */}
+        {/* Sticky Order Button at bottom */}
         <div
           style={{
             position: "sticky",
@@ -232,18 +239,13 @@ const CartSidebar = () => {
             borderTop: "1px solid #ddd",
           }}
         >
-          <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 2, mb: 1 }}
-          >
-            Order
+          <Button fullWidth variant="contained" color="primary" sx={{ mt: 2, mb: 1 }}>
+            Commander
           </Button>
         </div>
       </SwipeableDrawer>
 
-      {/* Modal confirmation suppression */}
+      {/* Confirmation dialog for deleting all items in cart */}
       <ConfirmDeleteDialog
         open={confirmDeleteOpen}
         onClose={() => setConfirmDeleteOpen(false)}

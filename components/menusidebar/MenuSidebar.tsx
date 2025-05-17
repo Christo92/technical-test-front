@@ -10,6 +10,7 @@ import {
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import BadgeIconButton from "@components/header/BadgeIconButton";
+import Link from "next/link";
 
 interface MenuSidebarProps {
   open: boolean;
@@ -48,7 +49,9 @@ const MenuSidebar: React.FC<MenuSidebarProps> = ({
             {categories.map((category) => (
               <ListItemButton
                 key={category}
-                selected={category.toLowerCase() === selectedCategory?.toLowerCase()}
+                selected={
+                  category.toLowerCase() === selectedCategory?.toLowerCase()
+                }
                 onClick={() => {
                   onCategorySelect(category);
                   onClose();
@@ -79,7 +82,9 @@ const MenuSidebar: React.FC<MenuSidebarProps> = ({
             count={wishlistCount}
             badgeColor="red"
           />
-          <Typography component="span">Wishlist</Typography>
+          <Link href="/wishlist" passHref>
+            <Typography component="span">Wishlist</Typography>
+          </Link>
         </Box>
 
         <Divider sx={{ my: 2 }} />

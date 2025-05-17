@@ -5,6 +5,17 @@ import welcomeBackground from "@assets/welcome-background.jpg";
 import welcomeIcon from "@assets/welcome-icon.svg";
 import WelcomeSection from "@components/welcomeCard/WelcomeSection";
 
+/**
+ * WelcomeCard component
+ *
+ * Displays a welcome section with a background image and multiple info sections.
+ *
+ * Features:
+ * - Responsive layout: stacks vertically on small screens, horizontal on larger.
+ * - Uses MUI's `useTheme` and `useMediaQuery` for responsive behavior.
+ * - Background image fades in smoothly after loading.
+ * - Contains multiple `WelcomeSection` components displaying icons, titles, and descriptions.
+ */
 const WelcomeCard = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -21,7 +32,7 @@ const WelcomeCard = () => {
         gap: isMobile ? 4 : 6,
       }}
     >
-      {/* Image avec fade-in */}
+      {/* Background image with fade-in effect */}
       <Box
         sx={{
           flexShrink: 0,
@@ -51,6 +62,7 @@ const WelcomeCard = () => {
         </Fade>
       </Box>
 
+      {/* Multiple welcome sections with icons and text */}
       <Box
         sx={{
           display: "flex",
