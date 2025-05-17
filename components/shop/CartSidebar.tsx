@@ -14,58 +14,93 @@ import {
   CardMedia,
   Grid,
   Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import GlobalContext, { Product } from "@state/global-context";
+import ConfirmDeleteDialog from "@components/shop/ConfirmDeleteDialog";
+
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
 
 const CartSidebar = () => {
   const context = useContext(GlobalContext);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const theme = useTheme();
 
-  const cart: Product[] = useMemo(() => context.cart || [], [context.cart]);
+  const groupedCart: CartItem[] = useMemo(() => {
+    const map = new Map<number, CartItem>();
+    const order: number[] = [];
 
-  const handleRemoveProduct = (id: number) => {
-    context.removeProductToCart(id);
-  };
+    context.cart.forEach((product) => {
+      if (map.has(product.id)) {
+        map.get(product.id)!.quantity += 1;
+      } else {
+        map.set(product.id, { product, quantity: 1 });
+        order.push(product.id);
+      }
+    });
+
+    return order.map((id) => map.get(id)!);
+  }, [context.cart]);
 
   const getTotalPrice = useCallback(() => {
-    const total = cart.reduce((sum, p) => sum + p.price, 0);
+    const total = groupedCart.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0
+    );
     setTotalPrice(total);
-  }, [cart]);
+  }, [groupedCart]);
 
   useEffect(() => {
     getTotalPrice();
   }, [getTotalPrice]);
 
+  const handleRemoveProduct = (id: number) => {
+    context.removeProductToCart(id);
+  };
+
+  const handleConfirmDeleteAll = () => {
+    context.clearCart();
+    setConfirmDeleteOpen(false);
+  };
+
   return (
-    <SwipeableDrawer
-      anchor="right"
-      open={context.open_cartsidebar}
-      onClose={() => context.pushObject("open_cartsidebar", false)}
-      onOpen={() => context.pushObject("open_cartsidebar", true)}
-      PaperProps={{
-        sx: {
-          width: {
-            xs: "100vw", // 100% en mobile
-            sm: 400, // 400px dès sm+
+    <>
+      <SwipeableDrawer
+        anchor="right"
+        open={context.open_cartsidebar}
+        onClose={() => context.pushObject("open_cartsidebar", false)}
+        onOpen={() => context.pushObject("open_cartsidebar", true)}
+        PaperProps={{
+          sx: {
+            width: {
+              xs: "100vw",
+              sm: 400,
+            },
+            display: "flex",
+            flexDirection: "column",
           },
-        },
-      }}
-    >
-      <div
-        style={{
-          padding: theme.spacing(2),
-          backgroundColor: "#f9f9f9",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
         }}
       >
-        <div>
+        <div
+          style={{
+            padding: theme.spacing(2),
+            backgroundColor: "#f9f9f9",
+            flex: 1,
+            overflowY: "auto",
+          }}
+        >
           <Grid
             container
             alignItems="center"
@@ -78,12 +113,22 @@ const CartSidebar = () => {
             >
               <ArrowBackIcon />
             </IconButton>
-            <Typography variant="h6">Shopping Cart</Typography>
+            <Typography variant="h6">Panier</Typography>
+            {groupedCart.length > 0 && (
+              <Button
+                onClick={() => setConfirmDeleteOpen(true)}
+                color="error"
+                size="small"
+              >
+                Tout supprimer
+              </Button>
+            )}
           </Grid>
           <Divider sx={{ mb: 2 }} />
-          {cart.map((product, index) => (
+
+          {groupedCart.map(({ product, quantity }) => (
             <Card
-              key={index}
+              key={product.id}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -93,50 +138,81 @@ const CartSidebar = () => {
                 borderRadius: 2,
                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
                 position: "relative",
+                paddingRight: "45px",
               }}
             >
               <CardMedia
                 component="img"
                 alt={product.title}
                 image={product.image}
-                sx={{ width: 60, height: 60, borderRadius: 1, mr: 2 }}
+                sx={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 1,
+                  mr: 2,
+                  alignSelf: "center", // centré verticalement
+                }}
               />
-              <Grid
-                container
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Grid sx={{ paddingRight: "40px" }}>
+              <Grid container>
+                <Grid>
                   <Typography
                     variant="body2"
                     sx={{
                       overflow: "hidden",
-                      whiteSpace: "nowrap",
                       textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                       maxWidth: "100%",
                     }}
                   >
                     {product.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    ${product.price.toFixed(2)}
+                    ${product.price.toFixed(2)} × {quantity}
                   </Typography>
                 </Grid>
-                <IconButton
-                  onClick={() => handleRemoveProduct(product.id)}
-                  size="small"
-                  sx={{
-                    position: "absolute",
-                    right: 8,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
+                <Grid sx={{ mt: 1 }}>
+                  <Grid container alignItems="center" spacing={1}>
+                    <Grid>
+                      <IconButton
+                        onClick={() =>
+                          context.decrementProductQuantity(product.id)
+                        }
+                        size="small"
+                      >
+                        <RemoveIcon fontSize="small" />
+                      </IconButton>
+                    </Grid>
+                    <Grid>
+                      <Typography>{quantity}</Typography>
+                    </Grid>
+                    <Grid>
+                      <IconButton
+                        onClick={() =>
+                          context.incrementProductQuantity(product)
+                        }
+                        size="small"
+                      >
+                        <AddIcon fontSize="small" />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                </Grid>
               </Grid>
+              <IconButton
+                onClick={() => handleRemoveProduct(product.id)}
+                size="small"
+                sx={{
+                  position: "absolute",
+                  right: 8,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
             </Card>
           ))}
+
           <Divider sx={{ my: 2 }} />
           <Typography
             variant="h6"
@@ -145,16 +221,35 @@ const CartSidebar = () => {
             Total: ${totalPrice.toFixed(2)}
           </Typography>
         </div>
-        <Button
-          fullWidth
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2, mb: 1 }}
+
+        {/* Sticky Order Button */}
+        <div
+          style={{
+            position: "sticky",
+            bottom: 0,
+            backgroundColor: "#f9f9f9",
+            padding: theme.spacing(2),
+            borderTop: "1px solid #ddd",
+          }}
         >
-          Order
-        </Button>
-      </div>
-    </SwipeableDrawer>
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2, mb: 1 }}
+          >
+            Order
+          </Button>
+        </div>
+      </SwipeableDrawer>
+
+      {/* Modal confirmation suppression */}
+      <ConfirmDeleteDialog
+        open={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={handleConfirmDeleteAll}
+      />
+    </>
   );
 };
 

@@ -16,6 +16,9 @@ interface GlobalState {
   pushObject: (key: string, value: any, callback?: () => void) => void;
   addProductToCart: (product: Product, callback?: () => void) => void;
   removeProductToCart: (id: number, callback?: () => void) => void;
+  incrementProductQuantity: (product: Product) => void;
+  decrementProductQuantity: (productId: number) => void;
+  clearCart: () => void;
   addProductToWishlist: (productId: number, callback?: () => void) => void;
   removeProductFromWishlist: (productId: number, callback?: () => void) => void;
   handleAddToCart: (product: Product) => void;
@@ -54,16 +57,33 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
     callback?.();
   };
 
-  const handleAddToCart = (product: Product) => {
-    addProductToCart(product);
-    // pushObject("open_cartsidebar", true);
+  const removeProductToCart = (id: number, callback?: () => void) => {
+    const index = cart.findIndex((p) => p.id === id);
+    if (index !== -1) {
+      const updatedCart = [...cart];
+      updatedCart.splice(index, 1);
+      setCart(updatedCart);
+      sessionStorage.setItem("cart", JSON.stringify(updatedCart));
+      callback?.();
+    }
   };
 
-  const removeProductToCart = (id: number, callback?: () => void) => {
-    const updatedCart = cart.filter((p) => p.id !== id);
-    setCart(updatedCart);
-    sessionStorage.setItem("cart", JSON.stringify(updatedCart));
-    callback?.();
+  const incrementProductQuantity = (product: Product) => {
+    const existing = cart.find((p) => p.id === product.id);
+    addProductToCart(existing || product);
+  };
+
+  const decrementProductQuantity = (productId: number) => {
+    removeProductToCart(productId);
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    sessionStorage.setItem("cart", JSON.stringify([]));
+  };
+
+  const handleAddToCart = (product: Product) => {
+    addProductToCart(product);
   };
 
   const addProductToWishlist = (productId: number, callback?: () => void) => {
@@ -93,6 +113,9 @@ export const GlobalProvider = ({ children }: GlobalProviderProps) => {
         pushObject,
         addProductToCart,
         removeProductToCart,
+        incrementProductQuantity,
+        decrementProductQuantity,
+        clearCart,
         addProductToWishlist,
         removeProductFromWishlist,
         handleAddToCart,
