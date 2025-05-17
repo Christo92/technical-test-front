@@ -1,3 +1,5 @@
+// pages/_document.tsx
+import React from "react";
 import Document, {
   Html,
   Head,
@@ -5,19 +7,58 @@ import Document, {
   NextScript,
   DocumentContext,
 } from "next/document";
-import { ServerStyleSheets } from "@mui/styles";
-import theme from "@theme/theme";
+import createEmotionServer from "@emotion/server/create-instance";
+import createCache from "@emotion/cache";
+import theme from "@theme/theme"; // adapte le chemin à ton projet
 
-class MyDocument extends Document {
+// Création du cache Emotion, clé 'css' par convention MUI Emotion
+function createEmotionCache() {
+  return createCache({ key: "css", prepend: true });
+}
+
+export default class MyDocument extends Document<{
+  emotionStyleTags: React.ReactElement[];
+}> {
+  static async getInitialProps(ctx: DocumentContext) {
+    const originalRenderPage = ctx.renderPage;
+
+    const cache = createEmotionCache();
+    const { extractCriticalToChunks } = createEmotionServer(cache);
+
+    ctx.renderPage = () =>
+      originalRenderPage({
+        enhanceApp: (App: any) => (props) =>
+          <App emotionCache={cache} {...props} />,
+      });
+
+    const initialProps = await Document.getInitialProps(ctx);
+
+    // Extraction des styles Emotion critiques (SSR)
+    const emotionChunks = extractCriticalToChunks(initialProps.html);
+    const emotionStyleTags = emotionChunks.styles.map((style) => (
+      <style
+        key={style.key}
+        data-emotion={`${style.key} ${style.ids.join(" ")}`}
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: style.css }}
+      />
+    ));
+
+    return {
+      ...initialProps,
+      emotionStyleTags,
+    };
+  }
+
   render() {
     return (
       <Html lang="fr">
         <Head>
+          {/* Theme color pour mobile */}
           <meta name="theme-color" content={theme.palette.primary.main} />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
-          />
+
+          {/* Injection des styles Emotion SSR */}
+          {this.props.emotionStyleTags}
         </Head>
         <body>
           <Main />
@@ -27,29 +68,3 @@ class MyDocument extends Document {
     );
   }
 }
-
-// `getInitialProps` belongs to `_document` (instead of `_app`),
-// it's compatible with server-side generation (SSG).
-MyDocument.getInitialProps = async (ctx: DocumentContext) => {
-  // Render app and page and get the context of the page with collected side effects.
-  const sheets = new ServerStyleSheets();
-  const originalRenderPage = ctx.renderPage;
-
-  ctx.renderPage = () =>
-    originalRenderPage({
-      enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
-    });
-
-  const initialProps = await Document.getInitialProps(ctx);
-
-  return {
-    ...initialProps,
-    // Styles fragment is rendered after the app and page rendering finish.
-    styles: [
-      ...(Array.isArray(initialProps.styles) ? initialProps.styles : []),
-      sheets.getStyleElement(),
-    ],
-  };
-};
-
-export default MyDocument;

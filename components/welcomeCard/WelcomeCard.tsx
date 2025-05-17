@@ -32,6 +32,7 @@ const WelcomeCard = () => {
           src={welcomeBackground}
           alt="SuperShop"
           style={{ width: "100%", height: "auto", borderRadius: 8 }}
+          priority
         />
       </Box>
 

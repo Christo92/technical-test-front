@@ -60,7 +60,12 @@ const Header: React.FC = () => {
                 passHref
                 style={{ display: "flex", alignItems: "center" }}
               >
-                <Image src={supershopLogo} alt="SuperShop Logo" height={40} />
+                <Image
+                  src={supershopLogo}
+                  alt="SuperShop Logo"
+                  height={40}
+                  priority
+                />
               </Link>
 
               {!isSmallScreen && (

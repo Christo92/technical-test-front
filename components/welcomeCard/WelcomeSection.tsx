@@ -25,7 +25,7 @@ export default function WelcomeSection({
         borderRadius: 2,
       }}
     >
-      <Image src={imageSrc} alt={imageAlt} width={40} height={40} />
+      <Image src={imageSrc} alt={imageAlt} width={40} height={40} priority />
       <Box>
         <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
           {title}
