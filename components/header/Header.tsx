@@ -140,6 +140,9 @@ const Header: React.FC = () => {
           setMenuSidebarOpen(false);
           context.pushObject("open_cartsidebar", true);
         }}
+        categories={categories}
+        onCategorySelect={handleCategoryClick}
+        selectedCategory={selectedCategory}
       />
     </>
   );

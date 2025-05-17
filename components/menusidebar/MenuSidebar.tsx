@@ -1,9 +1,15 @@
 import React from "react";
-import { Drawer, Box, Divider, Typography } from "@mui/material";
-import Link from "next/link";
+import {
+  Drawer,
+  Box,
+  Divider,
+  Typography,
+  List,
+  ListItemButton,
+} from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
-import BadgeIconButton from "@components/header/BadgeIconButton"; // adapte le chemin si besoin
+import BadgeIconButton from "@components/header/BadgeIconButton";
 
 interface MenuSidebarProps {
   open: boolean;
@@ -11,6 +17,9 @@ interface MenuSidebarProps {
   wishlistCount: number;
   cartCount: number;
   onCartClick: () => void;
+  categories: string[];
+  onCategorySelect: (category: string) => void;
+  selectedCategory?: string;
 }
 
 const MenuSidebar: React.FC<MenuSidebarProps> = ({
@@ -19,6 +28,9 @@ const MenuSidebar: React.FC<MenuSidebarProps> = ({
   wishlistCount,
   cartCount,
   onCartClick,
+  categories,
+  onCategorySelect,
+  selectedCategory,
 }) => {
   return (
     <Drawer anchor="left" open={open} onClose={onClose}>
@@ -26,6 +38,30 @@ const MenuSidebar: React.FC<MenuSidebarProps> = ({
         <Typography variant="h6" mb={2}>
           Menu
         </Typography>
+
+        {/* Categories list */}
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="subtitle1" gutterBottom>
+            Catégories
+          </Typography>
+          <List>
+            {categories.map((category) => (
+              <ListItemButton
+                key={category}
+                selected={category.toLowerCase() === selectedCategory?.toLowerCase()}
+                onClick={() => {
+                  onCategorySelect(category);
+                  onClose();
+                }}
+                sx={{ textTransform: "uppercase" }}
+              >
+                {category}
+              </ListItemButton>
+            ))}
+          </List>
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
 
         <Box
           onClick={onClose}
@@ -43,9 +79,7 @@ const MenuSidebar: React.FC<MenuSidebarProps> = ({
             count={wishlistCount}
             badgeColor="red"
           />
-          <Link href="/wishlist" passHref>
-            <Typography component="span">Wishlist</Typography>
-          </Link>
+          <Typography component="span">Wishlist</Typography>
         </Box>
 
         <Divider sx={{ my: 2 }} />

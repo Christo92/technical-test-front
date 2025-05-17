@@ -19,19 +19,16 @@ const ProductList: React.FC = () => {
 
     setLoading(true);
 
-    const timeout = setTimeout(() => {
-      const newFiltered =
-        categoryQuery === "all"
-          ? products
-          : products.filter(
-              (product) => product.category.toLowerCase() === categoryQuery
-            );
+    // Filtrage direct sans timeout
+    const newFiltered =
+      categoryQuery === "all"
+        ? products
+        : products.filter(
+            (product) => product.category.toLowerCase() === categoryQuery
+          );
 
-      setFilteredProducts(newFiltered);
-      setLoading(false);
-    }, 400); // durée du faux "lazy loading"
-
-    return () => clearTimeout(timeout);
+    setFilteredProducts(newFiltered);
+    setLoading(false);
   }, [isReady, categoryQuery, products]);
 
   if (!isReady || loading) {
